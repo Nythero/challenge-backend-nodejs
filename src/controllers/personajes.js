@@ -15,6 +15,26 @@ personajesController.get('/', async (req, res, next) => {
   }
 })
 
+personajesController.get('/:id', async (req, res, next) => {
+  const id = req.params.id
+  const attributes = ['imagen', 'nombre', 'edad',
+    'peso', 'historia', 'peliculasOSeries', 'id']
+  try {
+    const personaje = await Personaje.findOne({
+      where: {
+	id
+      },
+      attributes
+    })
+    if(!personaje)
+      return res.status(404).json({ error: "character not found" })
+    res.status(200).json(personaje)
+  }
+  catch(err) {
+    next(err)
+  }
+})
+
 personajesController.post('/', async (req, res, next) => {
   const personajeData = {
     imagen: req.body.imagen,
@@ -51,7 +71,6 @@ personajesController.delete('/:id', async (req, res, next) => {
 
 personajesController.put('/:id', async (req, res, next) => {
   const id = req.params.id
-  console.log(id)
   const personajeData = {
     imagen: req.body.imagen,
     nombre: req.body.nombre,
@@ -66,7 +85,6 @@ personajesController.put('/:id', async (req, res, next) => {
 	id
       }
     })
-    console.log(newPersonaje)
     res.status(200).json(personajeDto(newPersonaje))
   }
   catch(err) {

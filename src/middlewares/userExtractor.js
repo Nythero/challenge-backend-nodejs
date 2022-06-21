@@ -16,10 +16,12 @@ const userExtractor = async (req, res, next) => {
     else
       return next(err)
   }
+  const attributes = ['username', 'passwordHash']
   req.user = await Usuario.findOne({
     where: {
       id: decodedToken.id
-    }
+    },
+    attributes
   })
   if(req.user === null)
     return res.status(401).json({ error: 'token missing or invalid' })

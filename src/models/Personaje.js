@@ -7,7 +7,7 @@ const Personaje = sequelize.define('personaje', {
   edad: DataTypes.INTEGER,
   peso: DataTypes.INTEGER,
   historia: DataTypes.TEXT,
-  peliculasOSeries: DataTypes.Text
+  peliculasOSeries: DataTypes.TEXT
 })
 
 sequelize.sync()

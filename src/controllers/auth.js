@@ -8,15 +8,12 @@ const bcrypt = require('bcrypt')
 const Usuario = require('../models/Usuario')
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../utils/config')
+const findUser = require('../utils/findUser')
 
-authController.post('/login', async (req, res, next) => {
-  const { username, password } = req.body
+authController.post('/login', findUser, async (req, res, next) => {
+  const { password } = req.body
+  const user = req.user
   
-  const user = await Usuario.findOne({
-    where: {
-      username
-    }
-  })
   const isPasswordCorrect = user?
     await bcrypt.compare(password, user.passwordHash) :
     false

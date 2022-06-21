@@ -39,15 +39,8 @@ personajesController.get('/',
 
 personajesController.get('/:id', async (req, res, next) => {
   const id = req.params.id
-  const attributes = ['imagen', 'nombre', 'edad',
-    'peso', 'historia', 'id']
   try {
-    const personaje = await Personaje.findOne({
-      where: {
-	id
-      },
-      attributes
-    })
+    const personaje = await Personaje.get(id)
     if(!personaje)
       return res.status(404).json({ error: "character not found" })
     res.status(200).json(personaje)
@@ -63,12 +56,12 @@ personajesController.post('/', async (req, res, next) => {
     nombre: req.body.nombre,
     edad: req.body.edad,
     peso: req.body.peso,
-    historia: req.body.historia
+    historia: req.body.historia,
+    peliculasOSeries: req.body.peliculasOSeries
   }
   try {
     const newPersonaje = await Personaje.create(personajeData)
-    const response = personajeDto(newPersonaje)
-    res.status(201).json(response)
+    res.status(201).json(newPersonaje)
   }
   catch(err) {
     next(err)
@@ -78,11 +71,7 @@ personajesController.post('/', async (req, res, next) => {
 personajesController.delete('/:id', async (req, res, next) => {
   const id = req.params.id
   try {
-    await Personaje.destroy({
-      where : {
-        id
-      }
-    })
+    await Personaje.destroy(id)
     res.status(204).end()
   }
   catch(err) {
@@ -100,12 +89,8 @@ personajesController.put('/:id', async (req, res, next) => {
     historia: req.body.historia
   }
   try {
-    const newPersonaje = await Personaje.update(personajeData, {
-      where: {
-	id
-      }
-    })
-    res.status(200).json(personajeDto(newPersonaje))
+    await Personaje.update(personajeData, id)
+    res.status(204).end()
   }
   catch(err) {
     next(err)

@@ -6,7 +6,8 @@ const {
 
 const sequelize = new Sequelize({
   dialect: SEQUELIZE_DIALECT,
-  storage: SEQUELIZE_STORAGE
+  storage: SEQUELIZE_STORAGE,
+  logging: false
 })
 
 module.exports = sequelize

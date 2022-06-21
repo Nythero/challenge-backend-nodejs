@@ -17,7 +17,6 @@ const personajeFilterExtractor = (req, res, next) => {
   const filters = {
     ...nameQuery,
     ...ageQuery,
-    ...movieQuery
   }
   req.filters = filters
   next()
@@ -41,7 +40,7 @@ personajesController.get('/',
 personajesController.get('/:id', async (req, res, next) => {
   const id = req.params.id
   const attributes = ['imagen', 'nombre', 'edad',
-    'peso', 'historia', 'peliculasOSeries', 'id']
+    'peso', 'historia', 'id']
   try {
     const personaje = await Personaje.findOne({
       where: {
@@ -64,8 +63,7 @@ personajesController.post('/', async (req, res, next) => {
     nombre: req.body.nombre,
     edad: req.body.edad,
     peso: req.body.peso,
-    historia: req.body.historia,
-    peliculasOSeries: req.body.peliculasOSeries
+    historia: req.body.historia
   }
   try {
     const newPersonaje = await Personaje.create(personajeData)
@@ -99,8 +97,7 @@ personajesController.put('/:id', async (req, res, next) => {
     nombre: req.body.nombre,
     edad: req.body.edad,
     peso: req.body.peso,
-    historia: req.body.historia,
-    peliculasOSeries: req.body.peliculasOSeries
+    historia: req.body.historia
   }
   try {
     const newPersonaje = await Personaje.update(personajeData, {

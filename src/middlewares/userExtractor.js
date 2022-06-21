@@ -4,20 +4,18 @@ const Usuario = require('../models/Usuario')
 
 const userExtractor = async (req, res, next) => {
   const token = req.token
-  
   let decodedToken
   try {
     decodedToken = jwt.verify(token, SECRET)
   } 
   catch(err) {
-    if(err.message === 'jwt must be provided')
-      decodedToken = {}
+    if(err.message === 'jwt must be provided' ||
+      err.message === 'jwt malformed' ||
+      err.message === 'invalid token')
+      return res.status(401).json({ error: 'token missing or invalid' })
     else
-      next(err)
+      return next(err)
   }
-  if(!decodedToken.id)
-    return res.status(401).json({ error: 'token missing or invalid' })
-
   req.user = await Usuario.findOne({
     where: {
       id: decodedToken.id

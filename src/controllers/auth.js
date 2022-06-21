@@ -26,7 +26,6 @@ authController.post('/login', findUser, async (req, res, next) => {
   }
 
   const token = jwt.sign(userForToken, SECRET)
-
   res.status(200).json({
     token: token,
     username: user.username

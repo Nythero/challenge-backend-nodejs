@@ -6,9 +6,34 @@ const {
 } = require('../utils/verifiers')
 const bcrypt = require('bcrypt')
 const Usuario = require('../models/Usuario')
+const jwt = require('jsonwebtoken')
+const { SECRET } = require('../utils/config')
 
-authController.post('/login', (req, res, next) => {
+authController.post('/login', async (req, res, next) => {
+  const { username, password } = req.body
+  
+  const user = await Usuario.findOne({
+    where: {
+      username
+    }
+  })
+  const isPasswordCorrect = user?
+    await bcrypt.compare(password, user.passwordHash) :
+    false
 
+  if(!isPasswordCorrect)
+    return res.status(401).json({ error: 'invalid username or password' })
+  const userForToken = {
+    username: user.username,
+    id: user.id
+  }
+
+  const token = jwt.sign(userForToken, SECRET)
+
+  res.status(200).json({
+    token: token,
+    username: user.username
+  })
 })
 
 authController.post('/register', usernameVerifier, passwordVerifier, async (req, res, next) => {
@@ -21,7 +46,7 @@ authController.post('/register', usernameVerifier, passwordVerifier, async (req,
 
   try {
     const newUser = await Usuario.create(userData)
-    const response = { username: newUser.username }
+    const response = { username: newUser.username, id: newUser.id }
     res.status(201).json(response)
   }
   catch(err) {

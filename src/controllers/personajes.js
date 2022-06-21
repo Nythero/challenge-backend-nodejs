@@ -3,10 +3,33 @@ const personajesController = express.Router()
 const Personaje = require('../models/Personaje')
 const personajeDto = require('../dtos/personajes')
 
-personajesController.get('/', async (req, res, next) => {
+const personajeFilterExtractor = (req, res, next) => {
+  const query = req.query
+  const nameQuery = query.name?
+    { nombre: query.name } : 
+    {}
+  const ageQuery = query.age?
+    { edad: query.age } :
+    {}
+  const movieQuery = query.movies?
+    { peliculasOSeries: query.movies } :
+    {}
+  const filters = {
+    ...nameQuery,
+    ...ageQuery,
+    ...movieQuery
+  }
+  req.filters = filters
+  next()
+}
+
+personajesController.get('/', 
+  personajeFilterExtractor,
+  async (req, res, next) => {
   try {
     const personajes = await Personaje.findAll({
-      attributes: ['imagen', 'nombre']
+      attributes: ['imagen', 'nombre'],
+      where: req.filters
     })
     res.status(200).json(personajes)
   }

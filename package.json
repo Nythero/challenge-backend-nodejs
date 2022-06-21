@@ -1,0 +1,11 @@
+{
+  "name": "challenge-backend-nodejs",
+  "version": "1.0.0",
+  "description": "Challenge de Backend en NodeJs para Alkemy.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Agustin Gonzalez",
+  "license": "ISC"
+}

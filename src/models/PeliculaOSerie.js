@@ -41,9 +41,18 @@ const get = async (id) => {
   return peliculaOSerieDto(peliculaOSerie, personajes)
 }
 
+const destroy = async (id) => {
+  await PeliculaOSerie.destroy({
+    where: {
+      id
+    }
+  })
+}
+
 module.exports = {
   findAll,
   create,
   get,
+  destroy,
   PeliculaOSerie
 }

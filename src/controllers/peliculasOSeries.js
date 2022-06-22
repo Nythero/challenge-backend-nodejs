@@ -46,4 +46,15 @@ peliculasOSeriesController.post('/', async (req, res, next) => {
   }
 })
 
+peliculasOSeriesController.delete('/:id', async (req, res, next) => {
+  const id = req.params.id
+  try{
+    await PeliculaOSerie.destroy(id)
+    res.status(204).end()
+  }
+  catch(err) {
+    next(err)
+  }
+})
+
 module.exports = peliculasOSeriesController

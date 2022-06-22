@@ -1,0 +1,623 @@
+openapi: 3.0.0
+info:
+  description: This is an API of disney characters and the movies they appear on.
+  version: 1.0.0
+  title: Disney Api
+  license:
+    name: MIT
+    url: https://mit-license.org/
+tags:
+  - name: auth
+    description: Register and Login endpoints.
+  - name: characters
+    description: The Disney Characters.
+  - name: movies
+    description: The Disney Movies and Series.
+  - name: genres
+    description: The Disney Movies and Series' genres
+paths:
+  /auth/register:
+    post:
+      tags:
+      - auth
+      summary: Register a new account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/RegisterBody'
+      responses:
+        '201':
+          description: Successful Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  id:
+                    type: number
+        '400':
+          description:  Missing username/password/mail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'password needed'
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: Log in into your account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/LoginBody'
+      responses:
+        '200':
+          description: Login Succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: 'asdasdqwergsdfgdfxcvsdfgrfgrdfwertwre'
+                  username:
+                    type: string
+        '401':
+          description:  Invalid username or password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid username or password'
+  /characters/{characterId}:
+    get:
+      tags:
+      - characters
+      summary: Get the Disney character with the given id
+      parameters:
+        - name: characterId
+          in: path
+          description: The Id of the Disney character.
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successfull Request
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/CharacterDetailed'
+        '404':
+          description: Character not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'character not found'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+    put:
+      tags:
+      -  characters
+      summary: Update the Disney character with the given id.
+      parameters:
+        - name: characterId
+          in: path
+          description: The Id of the Disney character.
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/CharacterBody'
+      responses:
+        '204':
+          description: Succesfull Request
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+    delete:
+      tags:
+      - characters
+      summary: Delete the Disney character with the given id.
+      parameters:
+        - name: characterId
+          in: path
+          description: The Id of the Disney character.
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: Succesfull Request
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+  /characters:
+    get:
+      tags:
+      - characters
+      summary: Get the Disney characters according the queries.
+      parameters:
+        - name: name
+          in: query
+          description: The name of the Disney character.
+          required: false
+          schema:
+            type: string
+        - name: age
+          in: query
+          description: The age of the Disney character.
+          required: false
+          schema:
+            type: number
+        - name: movies
+          in: query
+          description: The movie or serie id where the Disney character appears.
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successful Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/Character'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+    post:
+      tags:
+      -  characters
+      summary: Create a new Disney character.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/CharacterBody'
+      responses:
+        '201':
+          description: Successfull Request
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/Character'
+        '400':
+          description: Invalid body data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Invalid imagen'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+  /movies/{movieId}:
+    get:
+      tags:
+      - movies
+      summary: Get the Disney movie or serie with the given id.
+      parameters:
+        - name: movieId
+          in: path
+          description: The Id of the Disney movie or serie.
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Succesfull Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetailed'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+    put:
+      tags:
+      - movies
+      summary: Update the Disney movie or serie with the given id.
+      parameters:
+        - name: movieId
+          in: path
+          description: The Id of the Disney movie or serie.
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/MovieBody'
+      responses:
+        '204':
+          description: Succesfull Request
+        '400':
+          description: Missing or invalid body data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+    delete:
+      tags:
+      - movies
+      summary: Delete the Disney movie or serie with the given id.
+      parameters:
+        - name: movieId
+          in: path
+          description: The Id of the Disney movie or serie.
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: Succesfull Request
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+  /movies:
+    get:
+      tags:
+      - movies
+      summary: Get the Disney movies or series according the queries.
+      parameters:
+        - name: name
+          in: query
+          description: The name of the Disney movie or serie.
+          required: false
+          schema:
+            type: string
+        - name: genre
+          in: query
+          description: The genre of the Disney movie or serie.
+          required: false
+          schema:
+            type: number
+        - name: order
+          in: query
+          description: The sorting order of the disney movies or series according their creation date.
+          required: false
+          schema:
+            type: string
+            enum:
+            - ASC
+            - DESC
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/Movie'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+    post:
+      tags:
+      - movies
+      summary: Create a new Disney movie or serie.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/MovieBody'
+      responses:
+        '201':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/Movie'
+        '400':
+          description: Invalid or missing body data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid titulo'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+  /genres:
+    post:
+      tags:
+      - genres
+      summary: Create a new movie genre.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/GenreBody'
+      responses:
+        '201':
+          description: Successful Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nombre:
+                    type: string
+                  imagen:
+                    type: string
+                  id:
+                    type: number
+        '400':
+          description: Invalid nombre or imagen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid nombre'
+        '401':
+          description: Invalid token or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid token or missing'
+components:
+  schemas:
+    RegisterBody:
+      type: object
+      required:
+      - username
+      - password
+      - mail
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        mail:
+          type: string
+    LoginBody:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    CharacterBody:
+      type: object
+      required:
+      - imagen
+      - nombre
+      - edad
+      - peso
+      - historia
+      properties:
+        imagen:
+          type: string
+        nombre:
+          type: string
+        edad:
+          type: number
+        peso:
+          type: number
+        historia:
+          type: string
+        peliculasOSeries:
+          anyOf:
+          - type: array
+            items:
+              type: number
+          - type: number
+    Character:
+      type: object
+      properties:
+        imagen:
+          type: string
+        nombre:
+          type: string
+        id:
+          type: number
+    CharacterDetailed:
+      type: object
+      properties:
+        imagen:
+          type: string
+        nombre:
+          type: string
+        id:
+          type: number
+        edad:
+          type: number
+        peso:
+          type: number
+        peliculasOSeries:
+          type: array
+          items:
+            type: object
+            properties:
+              imagen:
+                type: string
+              nombre:
+                type: string
+              id:
+                type: number
+    GenreBody:
+      type: object
+      required:
+      - name
+      - imagen
+      properties:
+        name:
+          type: string
+        imagen:
+          type: string
+        peliculasOSeries:
+          anyOf:
+          - type: array
+            items:
+              type: number
+          - type: number
+    MovieBody:
+      type: object
+      required:
+      - name
+      - calificacion
+      - fechaCreacion
+      - imagen
+      properties:
+        name:
+          type: string
+        calificacion:
+          type: number
+        fechaCreacion:
+          type: string
+        imagen:
+          type: string
+        personajes:
+          type: array
+          items:
+            type: number
+    Movie:
+      type: object
+      properties:
+        imagen:
+          type: string
+        titulo:
+          type: string
+        fechaCreacion:
+          type: string
+        id:
+          type: number
+    MovieDetailed:
+      type: object
+      properties:
+        imagen:
+          type: string
+        titulo:
+          type: string
+        fechaCreacion:
+          type: string
+        calificacion:
+          type: number
+        personajes:
+          type: array
+          items: 
+            type: object
+            properties:
+              imagen:
+                type: string
+              nombre:
+                type: string
+              id:
+                type: number

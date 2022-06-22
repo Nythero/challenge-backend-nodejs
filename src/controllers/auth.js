@@ -2,13 +2,15 @@ const express = require('express')
 const authController = express.Router()
 const { 
   usernameVerifier,
-  passwordVerifier
+  passwordVerifier,
+  mailVerifier
 } = require('../utils/verifiers')
 const bcrypt = require('bcrypt')
 const Usuario = require('../models/Usuario')
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../utils/config')
 const findUser = require('../utils/findUser')
+const sendGridService = require('../services/sendGrid')
 
 authController.post('/login', findUser, async (req, res, next) => {
   const { password } = req.body
@@ -32,22 +34,28 @@ authController.post('/login', findUser, async (req, res, next) => {
   })
 })
 
-authController.post('/register', usernameVerifier, passwordVerifier, async (req, res, next) => {
-  const { username, password } = req.body
+authController.post('/register',
+  usernameVerifier,
+  passwordVerifier,
+  mailVerifier,
+  async (req, res, next) => {
+    const { username, password, mail } = req.body
 
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
 
-  const userData = { username, passwordHash }
+    const userData = { username, passwordHash, mail }
 
-  try {
-    const newUser = await Usuario.create(userData)
-    const response = { username: newUser.username, id: newUser.id }
-    res.status(201).json(response)
-  }
-  catch(err) {
-    next(err)
-  }
+    try {
+      const newUser = await Usuario.create(userData)
+      const response = { username: newUser.username, id: newUser.id }
+      const msg = sendGridService.welcomingMail(newUser.mail, newUser.username)
+      sendGridService.sendMail(msg)
+      res.status(201).json(response)
+    }
+    catch(err) {
+      next(err)
+    }
 })
 
 module.exports = authController

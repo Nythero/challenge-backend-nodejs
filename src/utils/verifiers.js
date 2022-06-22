@@ -12,9 +12,17 @@ const usernameVerifier = (req, res, next) => {
   next()
 }
 
+const mailVerifier = (req, res, next) => {
+  const mail = req.body.mail
+  if(!mail)
+    return res.status(400).json({ error: 'mail needed' })
+  next()
+}
+
 const verifiers = {
   passwordVerifier,
-  usernameVerifier
+  usernameVerifier,
+  mailVerifier
 }
 
 module.exports = verifiers

@@ -10,6 +10,10 @@ const Usuario = sequelize.define('usuario', {
   passwordHash: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  mail: {
+    type: DataTypes.TEXT,
+    allowNull: false
   }
 })
 

@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../utils/database')
 const peliculaOSerieDto = require('../dtos/peliculaOSerie')
+const { Genero } = require('./Genero')
 
 const PeliculaOSerie = sequelize.define(
   'peliculaOSerie',
@@ -14,8 +15,28 @@ const PeliculaOSerie = sequelize.define(
 
 sequelize.sync()
 
+PeliculaOSerie.belongsToMany(Genero, {
+  through: 'PeliculaOSerie_Tiene_Genero',
+  foreignKey: 'PeliculaOSerieId'
+})
+
+Genero.belongsToMany(PeliculaOSerie, {
+  through: 'PeliculaOSerie_Tiene_Genero',
+  foreignKey: 'GeneroId'
+})
+
 const findAll = async (options) => {
-  return await PeliculaOSerie.findAll(options)
+  const os = {
+    ...options,
+    include: [{
+      model: Genero,
+      attributes: [],
+      through: {
+	attributes: []
+      }
+    }]
+  }
+  return await PeliculaOSerie.findAll(os)
 }
 
 const create = async ({ personajes, ...peliculaOSerieData }) => {

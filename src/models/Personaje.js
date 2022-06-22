@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../utils/database')
-const PeliculaOSerie = require('../models/PeliculaOSerie')
+const { PeliculaOSerie } = require('../models/PeliculaOSerie')
 const personajeDto = require('../dtos/personajes')
 
 const Personaje = sequelize.define('personaje', {
@@ -58,12 +58,9 @@ const update = async (personajeData, id) => {
 const get = async (id) => {
   const attributes = ['imagen', 'nombre', 'edad',
     'peso', 'historia', 'id']
-  const personaje = await Personaje.findByPk(
-    id,
-    {
-      attributes
-    }
-  )
+  const personaje = await Personaje.findByPk(id, {
+    attributes
+  })
   if(!personaje)
     return personaje
   const peliculasOSeries = await personaje.getPeliculaOSeries(
@@ -75,7 +72,17 @@ const get = async (id) => {
 }
 
 const findAll = async (options) => {
-  return await Personaje.findAll(options)
+  const os = { 
+    ...options,
+    include: [{
+      model: PeliculaOSerie,
+      attributes: ['imagen', 'titulo', 'fechaCreacion', 'id'],
+      through: {
+	attributes: []
+      }
+    }]
+  }
+  return await Personaje.findAll(os)
 }
 
 module.exports = {
@@ -83,5 +90,6 @@ module.exports = {
   destroy,
   get,
   update,
-  findAll
+  findAll,
+  Personaje
 }

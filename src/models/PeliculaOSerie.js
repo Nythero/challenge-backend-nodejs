@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../utils/database')
+const peliculaOSerieDto = require('../dtos/peliculaOSerie')
 
 const PeliculaOSerie = sequelize.define(
   'peliculaOSerie',
@@ -13,4 +14,36 @@ const PeliculaOSerie = sequelize.define(
 
 sequelize.sync()
 
-module.exports = PeliculaOSerie
+const findAll = async (options) => {
+  return await PeliculaOSerie.findAll(options)
+}
+
+const create = async ({ personajes, ...peliculaOSerieData }) => {
+  const peliculaOSerie = await PeliculaOSerie.create(peliculaOSerieData)
+  if (personajes)
+    await peliculaOSerie.addPersonajes(personajes)
+  const ps = await peliculaOSerie.getPersonajes({
+    attributes: ['imagen', 'nombre', 'id']
+  })
+  return peliculaOSerieDto(peliculaOSerie, ps)
+}
+
+const get = async (id) => {
+  const peliculaOSerie = await PeliculaOSerie.findByPk(id, {
+    attributes: ['imagen', 'titulo', 'fechaCreacion', 'calificacion', 'id']
+  })
+  const p = await PeliculaOSerie.findOne({ where: { id } })
+  if(!peliculaOSerie)
+    return peliculaOSerie
+  const personajes = await peliculaOSerie.getPersonajes({
+    attributes: ['imagen', 'nombre', 'id']
+  })
+  return peliculaOSerieDto(peliculaOSerie, personajes)
+}
+
+module.exports = {
+  findAll,
+  create,
+  get,
+  PeliculaOSerie
+}

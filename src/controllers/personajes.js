@@ -12,11 +12,12 @@ const personajeFilterExtractor = (req, res, next) => {
     { edad: query.age } :
     {}
   const movieQuery = query.movies?
-    { peliculasOSeries: query.movies } :
+    { '$peliculaOSeries.id$': query.movies } :
     {}
   const filters = {
     ...nameQuery,
     ...ageQuery,
+    ...movieQuery
   }
   req.filters = filters
   next()
@@ -27,7 +28,7 @@ personajesController.get('/',
   async (req, res, next) => {
   try {
     const personajes = await Personaje.findAll({
-      attributes: ['imagen', 'nombre'],
+      attributes: ['imagen', 'nombre', 'id'],
       where: req.filters
     })
     res.status(200).json(personajes)

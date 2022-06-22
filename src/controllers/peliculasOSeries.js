@@ -4,10 +4,23 @@ const PeliculaOSerie = require('../models/PeliculaOSerie')
 const peliculaOSerieDto = require('../dtos/peliculaOSerie')
 const Personaje = require('../models/Personaje')
 
+peliculasOSeriesController.get('/:id', async (req, res,next) => {
+  const id = req.params.id
+  try{
+    const peliculaOSerie = await PeliculaOSerie.get(id)
+    if(!peliculaOSerie)
+      return res.status(404).json({ error: 'movie not found' })
+    res.status(200).json(peliculaOSerie)
+  }
+  catch(err) {
+    next(err)
+  }
+})
+
 peliculasOSeriesController.get('/', async (req, res, next) => {
   try {
     const peliculasOSeries = await PeliculaOSerie.findAll({
-      attributes: ['imagen', 'titulo', 'fechaCreacion']
+      attributes: ['imagen', 'titulo', 'fechaCreacion', 'id']
     })
     res.status(200).json(peliculasOSeries)
   }
@@ -26,13 +39,7 @@ peliculasOSeriesController.post('/', async (req, res, next) => {
   }
   try {
     const peliculaOSerie = await PeliculaOSerie.create(peliculaOSerieData)
-    const personajes = req.body.personajes
-    if (personajes)
-      await peliculaOSerie.addPersonajes(personajes)
-    const ps = await peliculaOSerie.getPersonajes({
-      attributes: ['imagen', 'nombre', 'id']
-    })
-    res.status(201).json(peliculaOSerieDto(peliculaOSerie, ps))
+    res.status(201).json(peliculaOSerie)
   }
   catch(err) {
     next(err)

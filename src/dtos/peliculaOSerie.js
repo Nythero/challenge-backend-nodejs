@@ -4,15 +4,13 @@ const personajeDto = (personaje) => ({
   id: personaje.id
 })
 
-const peliculaOSerieDto = (peliculaOSerie, personajes) => {
-  const dto = {
-    imagen: peliculaOSerie.imagen,
-    titulo: peliculaOSerie.titulo,
-    fechaCreacion: peliculaOSerie.fechaCreacion,
-    calificacion: peliculaOSerie.calificacion,
-    id: peliculaOSerie.id,
-    personajes: personajes.map(personajeDto)
-  }
-}
+const peliculaOSerieDto = (peliculaOSerie, personajes) => ({
+  imagen: peliculaOSerie.imagen,
+  titulo: peliculaOSerie.titulo,
+  fechaCreacion: peliculaOSerie.fechaCreacion,
+  calificacion: peliculaOSerie.calificacion,
+  id: peliculaOSerie.id,
+  personajes: personajes.map(personajeDto)
+})
 
 module.exports = peliculaOSerieDto

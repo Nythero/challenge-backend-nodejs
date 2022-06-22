@@ -49,10 +49,19 @@ const destroy = async (id) => {
   })
 }
 
+const update = async (peliculaOSerieData, id) => {
+  await PeliculaOSerie.update(peliculaOSerieData, {
+    where: {
+      id
+    }
+  })
+}
+
 module.exports = {
   findAll,
   create,
   get,
   destroy,
+  update,
   PeliculaOSerie
 }

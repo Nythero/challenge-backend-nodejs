@@ -2,11 +2,10 @@ const express = require('express')
 const peliculasOSeriesController = express.Router()
 const PeliculaOSerie = require('../models/PeliculaOSerie')
 const peliculaOSerieDto = require('../dtos/peliculaOSerie')
-const Personaje = require('../models/Personaje')
 
 peliculasOSeriesController.get('/:id', async (req, res,next) => {
   const id = req.params.id
-  try{
+  try {
     const peliculaOSerie = await PeliculaOSerie.get(id)
     if(!peliculaOSerie)
       return res.status(404).json({ error: 'movie not found' })
@@ -48,8 +47,26 @@ peliculasOSeriesController.post('/', async (req, res, next) => {
 
 peliculasOSeriesController.delete('/:id', async (req, res, next) => {
   const id = req.params.id
-  try{
+  try {
     await PeliculaOSerie.destroy(id)
+    res.status(204).end()
+  }
+  catch(err) {
+    next(err)
+  }
+})
+
+peliculasOSeriesController.put('/:id', async (req, res, next) => {
+  const id = req.params.id
+  const peliculaOSerieData = {
+    imagen: req.body.imagen,
+    titulo: req.body.titulo,
+    fechaCreacion: req.body.fechaCreacion,
+    calificacion: req.body.calificacion,
+    personajes: req.body.personajes
+  }
+  try {
+    await PeliculaOSerie.update(peliculaOSerieData, id)
     res.status(204).end()
   }
   catch(err) {
